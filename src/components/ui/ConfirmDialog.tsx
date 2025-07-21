@@ -34,22 +34,80 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <AlertDialog.Content className='fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none'>
           <div className='bg-white rounded-xl shadow-lg max-w-sm w-full p-6 pointer-events-auto'>
             <div className='flex items-center justify-center mb-4'>
-              <svg
-                className='h-12 w-12 text-yellow-500'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-                xmlns='http://www.w3.org/2000/svg'
-                aria-hidden='true'
-                focusable='false'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                />
-              </svg>
+              {title?.toLowerCase().includes('submit') ||
+              title?.toLowerCase().includes('update') ||
+              title?.toLowerCase().includes('edit') ||
+              actionText?.toLowerCase().includes('submit') ||
+              actionText?.toLowerCase().includes('update') ||
+              actionText?.toLowerCase().includes('edit') ? (
+                <svg
+                  className='h-12 w-12'
+                  viewBox='0 0 48 48'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                  aria-hidden='true'
+                  focusable='false'
+                >
+                  <circle
+                    cx='24'
+                    cy='24'
+                    r='22'
+                    fill='#0093dd'
+                    stroke='white'
+                    strokeWidth='2'
+                  />
+                  <rect
+                    x='22'
+                    y='16'
+                    width='4'
+                    height='14'
+                    rx='2'
+                    fill='white'
+                  />
+                  <rect
+                    x='22'
+                    y='33'
+                    width='4'
+                    height='4'
+                    rx='2'
+                    fill='white'
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className='h-[58px] w-[58px]'
+                  viewBox='0 0 58 58'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                  aria-hidden='true'
+                  focusable='false'
+                >
+                  <path
+                    d='M29 8 L52 49 Q56 55 50 55 L8 55 Q2 55 6 49 Z'
+                    fill='#ef4444'
+                    stroke='white'
+                    strokeWidth='2'
+                    strokeLinejoin='round'
+                    strokeLinecap='round'
+                  />
+                  <rect
+                    x='27'
+                    y='20'
+                    width='4'
+                    height='18'
+                    rx='4'
+                    fill='white'
+                  />
+                  <rect
+                    x='27'
+                    y='41'
+                    width='4'
+                    height='6'
+                    rx='2'
+                    fill='white'
+                  />
+                </svg>
+              )}
             </div>
             {title ? (
               <AlertDialog.Title

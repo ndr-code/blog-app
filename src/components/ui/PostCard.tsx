@@ -129,7 +129,7 @@ export const PostCard = ({
         {/* Tags */}
         {!isSmall && tags.length > 0 && (
           <div className='flex flex-wrap gap-2 mb-1'>
-            {tags.slice(0, 3).map((tag, idx) => {
+            {tags.map((tag, idx) => {
               const cleanTag = tag.replace(/["'`\[\]\{\}]/g, '');
               return (
                 <Link

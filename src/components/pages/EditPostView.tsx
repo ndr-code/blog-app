@@ -62,6 +62,12 @@ const EditPostView = () => {
   const [imageUrl, setImageUrl] = React.useState<string>('');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState({
+    title: '',
+    content: '',
+    tags: '',
+    image: '',
+  });
   const params = useParams();
   const postId = params?.id;
 
@@ -111,18 +117,45 @@ const EditPostView = () => {
   };
 
   const handleSubmit = async () => {
+    setShowUpdateConfirm(true);
+  };
+
+  const handleConfirmedUpdate = async () => {
     if (loading) return;
     setLoading(true);
     setError(null);
+    setFieldErrors({ title: '', content: '', tags: '', image: '' });
+    // Validasi manual
+    let hasError = false;
+    const newErrors = { title: '', content: '', tags: '', image: '' };
+    if (!title.trim()) {
+      newErrors.title = 'Please add a title.';
+      hasError = true;
+    }
+    if (!content.trim() || content === '<p></p>') {
+      newErrors.content = 'Please add content.';
+      hasError = true;
+    }
+    if (tags.length === 0) {
+      newErrors.tags = 'Please add at least one tag.';
+      hasError = true;
+    }
+    // Hanya validasi image jika user memilih file baru
+    if (!image && !imageUrl) {
+      newErrors.image = 'Please upload a cover image.';
+      hasError = true;
+    }
+    setFieldErrors(newErrors);
+    if (hasError) {
+      setLoading(false);
+      return;
+    }
     try {
       const formData = new FormData();
       if (title) formData.append('title', title);
       if (content) formData.append('content', content);
-      if (tags.length > 0) {
-        formData.append('tags', JSON.stringify(tags));
-      }
+      tags.forEach((tag) => formData.append('tags[]', tag));
       if (image) formData.append('image', image);
-
       const token = localStorage.getItem('token');
       const res = await fetch(`/api/posts/${postId}`, {
         method: 'PATCH',
@@ -141,7 +174,6 @@ const EditPostView = () => {
         setLoading(false);
         return;
       }
-
       setLoading(false);
       window.location.href = `/post/${postId}`;
     } catch (err) {
@@ -211,7 +243,7 @@ const EditPostView = () => {
 
   return (
     <div className='' role='main' aria-label='Edit post main content'>
-      <header className='flex items-center justify-between bg-white border-b border-neutral-200 sticky top-0 z-40 shadow-md/10 w-full h-20 px-30'>
+      <header className='flex items-center justify-between bg-white border-b border-neutral-200 sticky top-0 z-40 shadow-md/10 w-full h-20 px-4 sm:px-8'>
         <div>
           <h1
             className='text-xl font-bold flex items-center gap-2 '
@@ -273,11 +305,11 @@ const EditPostView = () => {
         </div>
       </header>
       <form
-        className='space-y-6 max-w-3xl mx-auto py-8'
+        className='space-y-6 w-full max-w-3xl mx-auto py-8 px-4 sm:px-6'
         aria-label='Edit post form'
         onSubmit={(e) => {
           e.preventDefault();
-          setShowUpdateConfirm(true);
+          handleSubmit();
         }}
         encType='multipart/form-data'
       >
@@ -293,6 +325,11 @@ const EditPostView = () => {
             required
             aria-label='Post title input'
           />
+          {fieldErrors.title && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.title}
+            </div>
+          )}
         </div>
         {/* Content */}
         <div>
@@ -303,7 +340,7 @@ const EditPostView = () => {
             aria-label='Post content editor'
           >
             {/* Toolbar placeholder */}
-            <div className='flex items-center px-2 py-1 border-b border-neutral-300 gap-1 bg-gray-50 text-sm rounded-t-xl'>
+            <div className='flex flex-wrap items-center px-2 py-1 border-b border-neutral-300 gap-1 sm:gap-2 bg-gray-50 text-sm rounded-t-xl'>
               <select className='border px-2 py-0.5 border-neutral-300 rounded-sm text-sm'>
                 <option aria-label='Heading 1'>Heading 1</option>
                 <option aria-label='Heading 2'>Heading 2</option>
@@ -506,6 +543,11 @@ const EditPostView = () => {
             </div>
             <EditorContent editor={editor} />
           </div>
+          {fieldErrors.content && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.content}
+            </div>
+          )}
         </div>
         {/* Cover Image */}
         <div>
@@ -513,7 +555,7 @@ const EditPostView = () => {
             Cover Image
           </label>
           <div
-            className='border-2 border-dashed border-neutral-300 bg-neutral-100 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer hover:border-blue-400 transition-colors  text-sm'
+            className='border-2 border-dashed border-neutral-300 bg-neutral-100 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer hover:border-blue-400 transition-colors  text-sm w-full max-w-full'
             onClick={() =>
               document.getElementById('cover-image-upload')?.click()
             }
@@ -540,7 +582,7 @@ const EditPostView = () => {
                 alt='Current Cover'
                 width={320}
                 height={160}
-                className='rounded-lg mb-2 max-h-40 object-cover border border-neutral-200'
+                className='rounded-lg mb-2 max-h-40 object-cover border border-neutral-200 w-full max-w-xs sm:max-w-sm md:max-w-md'
                 style={{ width: '100%', maxWidth: '320px' }}
               />
             )}
@@ -562,15 +604,20 @@ const EditPostView = () => {
               onChange={handleImageChange}
             />
           </div>
+          {fieldErrors.image && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.image}
+            </div>
+          )}
         </div>
         {/* Tags */}
         <div>
           <label className='block text-md font-semibold mb-2'>Tags</label>
-          <div className='w-full border rounded px-2 py-2 flex flex-wrap items-center min-h-[44px] bg-white'>
+          <div className='w-full border rounded px-2 py-2 flex flex-wrap items-center min-h-[44px] bg-white gap-2'>
             {tags.map((tag, idx) => (
               <div
                 key={tag}
-                className='flex items-center bg-gray-200 rounded px-2 py-1 text-sm'
+                className='flex items-center bg-gray-200 rounded px-2 py-1 text-sm mb-1'
               >
                 <span>{tag}</span>
                 <button
@@ -592,6 +639,11 @@ const EditPostView = () => {
               onKeyDown={handleTagInputKeyDown}
             />
           </div>
+          {fieldErrors.tags && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.tags}
+            </div>
+          )}
         </div>
         {/* Error Message */}
         {!!error && <div className='text-red-500 text-sm mb-4'>{error}</div>}
@@ -605,17 +657,6 @@ const EditPostView = () => {
           actionText='Logout'
           onAction={confirmLogout}
         />
-        {/* Finish Button */}
-        <div className='flex justify-end mt-8'>
-          <Button
-            type='submit'
-            variant='primary'
-            className='px-30 py-3'
-            disabled={loading}
-          >
-            {loading ? 'Submitting...' : 'Finish'}
-          </Button>
-        </div>
         {/* Confirm Update Dialog */}
         <ConfirmDialog
           isOpen={showUpdateConfirm}
@@ -625,9 +666,20 @@ const EditPostView = () => {
           actionText='Update'
           onAction={() => {
             setShowUpdateConfirm(false);
-            handleSubmit();
+            handleConfirmedUpdate();
           }}
         />
+        <div className='flex flex-col sm:flex-row justify-end mt-8 gap-2'>
+          <Button
+            type='submit'
+            variant='primary'
+            className='px-8 py-3 w-full sm:w-60'
+            disabled={loading}
+            aria-label='Update post'
+          >
+            {loading ? 'Updating...' : 'Update'}
+          </Button>
+        </div>
       </form>
     </div>
   );

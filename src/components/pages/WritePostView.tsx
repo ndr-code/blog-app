@@ -59,8 +59,15 @@ const WritePostView = () => {
   const [image, setImage] = React.useState<File | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState({
+    title: '',
+    content: '',
+    tags: '',
+    image: '',
+  });
 
   const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = React.useState(false);
 
   const { user, isLoggedIn, logout, token } = useAuth();
 
@@ -137,17 +144,43 @@ const WritePostView = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowSubmitConfirm(true);
+  };
+
+  const handleConfirmedSubmit = async () => {
     setLoading(true);
     setError(null);
+    setFieldErrors({ title: '', content: '', tags: '', image: '' });
+    // Validasi manual
+    let hasError = false;
+    const newErrors = { title: '', content: '', tags: '', image: '' };
+    if (!title.trim()) {
+      newErrors.title = 'Please add a title.';
+      hasError = true;
+    }
+    if (!content.trim() || content === '<p></p>') {
+      newErrors.content = 'Please add content.';
+      hasError = true;
+    }
+    if (tags.length === 0) {
+      newErrors.tags = 'Please add at least one tag.';
+      hasError = true;
+    }
+    if (!image) {
+      newErrors.image = 'Please upload a cover image.';
+      hasError = true;
+    }
+    setFieldErrors(newErrors);
+    if (hasError) {
+      setLoading(false);
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('content', content);
-      if (tags.length > 0) {
-        formData.append('tags', JSON.stringify(tags));
-      }
+      tags.forEach((tag) => formData.append('tags[]', tag));
       if (image) formData.append('image', image);
-
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: {
@@ -169,7 +202,6 @@ const WritePostView = () => {
         setLoading(false);
         return;
       }
-
       window.location.href = '/';
     } catch (err: unknown) {
       console.error('Submit Error:', err);
@@ -185,7 +217,7 @@ const WritePostView = () => {
 
   return (
     <div className='' role='main' aria-label='Write post main content'>
-      <header className='flex items-center justify-between bg-white border-b border-neutral-200 sticky top-0 z-40 shadow-md/10 w-full h-20 px-30'>
+      <header className='flex items-center justify-between bg-white border-b border-neutral-200 sticky top-0 z-40 shadow-md/10 w-full h-20 px-4 sm:px-8'>
         <div>
           <h1
             className='text-xl font-bold flex items-center gap-2 '
@@ -247,7 +279,7 @@ const WritePostView = () => {
         </div>
       </header>
       <form
-        className='space-y-6 max-w-3xl mx-auto py-8'
+        className='space-y-6 w-full max-w-3xl mx-auto py-8 px-4 sm:px-6'
         onSubmit={handleSubmit}
         encType='multipart/form-data'
         aria-label='Write post form'
@@ -261,9 +293,13 @@ const WritePostView = () => {
             className='w-full border rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm'
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            required
             aria-label='Post title input'
           />
+          {fieldErrors.title && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.title}
+            </div>
+          )}
         </div>
         {/* Content */}
         <div>
@@ -274,7 +310,7 @@ const WritePostView = () => {
             aria-label='Post content editor'
           >
             {/* Toolbar placeholder */}
-            <div className='flex items-center px-2 py-1 border-b border-neutral-300 gap-1 bg-gray-50 text-sm rounded-t-xl'>
+            <div className='flex flex-wrap items-center px-2 py-1 border-b border-neutral-300 gap-1 sm:gap-2 bg-gray-50 text-sm rounded-t-xl'>
               <select className='border px-2 py-0.5 border-neutral-300 rounded-sm text-sm'>
                 <option aria-label='Heading 1'>Heading 1</option>
                 <option aria-label='Heading 2'>Heading 2</option>
@@ -490,6 +526,11 @@ const WritePostView = () => {
             </div>
             <EditorContent editor={editor} />
           </div>
+          {fieldErrors.content && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.content}
+            </div>
+          )}
         </div>
         {/* Cover Image */}
         <div>
@@ -497,7 +538,7 @@ const WritePostView = () => {
             Cover Image
           </label>
           <div
-            className='border-2 border-dashed border-neutral-300 bg-neutral-100 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer hover:border-blue-400 transition-colors  text-sm'
+            className='border-2 border-dashed border-neutral-300 bg-neutral-100 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer hover:border-blue-400 transition-colors  text-sm w-full max-w-full'
             onClick={() =>
               document.getElementById('cover-image-upload')?.click()
             }
@@ -533,23 +574,27 @@ const WritePostView = () => {
               className='hidden'
               id='cover-image-upload'
               onChange={handleImageChange}
-              required
             />
             {image && (
-              <span className='text-sm text-green-600 mt-2'>
+              <span className='text-sm text-green-600 mt-2 break-all w-full text-center'>
                 Selected: {image.name}
               </span>
             )}
           </div>
+          {fieldErrors.image && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.image}
+            </div>
+          )}
         </div>
         {/* Tags */}
         <div>
           <label className='block text-md font-semibold mb-2'>Tags</label>
-          <div className='w-full border rounded px-2 py-2 flex flex-wrap items-center min-h-[44px] bg-white'>
+          <div className='w-full border rounded px-2 py-2 flex flex-wrap items-center min-h-[44px] bg-white gap-2'>
             {tags.map((tag, idx) => (
               <div
                 key={tag}
-                className='flex items-center bg-gray-200 rounded px-2 py-1 text-sm'
+                className='flex items-center bg-gray-200 rounded px-2 py-1 text-sm mb-1'
               >
                 <span>{tag}</span>
                 <button
@@ -571,6 +616,11 @@ const WritePostView = () => {
               onKeyDown={handleTagInputKeyDown}
             />
           </div>
+          {fieldErrors.tags && (
+            <div className='text-xs text-red-500 italic mt-1'>
+              {fieldErrors.tags}
+            </div>
+          )}
         </div>
         {/* Error Message */}
         {!!error && <div className='text-red-500 text-sm mb-4'>{error}</div>}
@@ -584,12 +634,24 @@ const WritePostView = () => {
           actionText='Logout'
           onAction={confirmLogout}
         />
+        {/* Confirm Submit Dialog */}
+        <ConfirmDialog
+          isOpen={showSubmitConfirm}
+          onClose={() => setShowSubmitConfirm(false)}
+          title='Confirm Submit'
+          message='Are you sure you want to submit this post?'
+          actionText='Submit'
+          onAction={() => {
+            setShowSubmitConfirm(false);
+            handleConfirmedSubmit();
+          }}
+        />
         {/* Finish Button */}
-        <div className='flex justify-end mt-8'>
+        <div className='flex flex-col sm:flex-row justify-end mt-8 gap-2'>
           <Button
             type='submit'
             variant='primary'
-            className='px-30 py-3'
+            className='px-8 py-3 w-full sm:w-60'
             disabled={loading}
             aria-label='Submit post'
           >

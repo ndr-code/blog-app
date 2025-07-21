@@ -390,22 +390,26 @@ const DetailView = ({
           <div>
             {isLoggedIn && user && user.id === post.author.id && (
               <div className='flex gap-4 ml-4 mt-1'>
-                <Link
-                  href={`/post/${post.id}/edit`}
-                  className='text-primary-300 font-medium underline underline-offset-2 cursor-pointer'
+                {/* Edit Button */}
+                <Button
+                  asChild
+                  variant='primary'
+                  className='text-primary-300 text-base font-medium cursor-pointer min-w-32 py-2'
                 >
-                  Edit
-                </Link>
-                <a
-                  href='#'
-                  className='text-red-500 font-medium underline underline-offset-2 cursor-pointer'
+                  <Link href={`/post/${post.id}/edit`}>Edit</Link>
+                </Button>
+                {/* Delete Button */}
+                <Button
+                  type='button'
+                  variant='danger'
+                  className='text-red-500 text-base font-medium  cursor-pointer min-w-32 py-2'
                   onClick={(e) => {
                     e.preventDefault();
                     setIsDeleteOpen(true);
                   }}
                 >
                   Delete
-                </a>
+                </Button>
                 <ConfirmDialog
                   isOpen={isDeleteOpen}
                   onClose={() => setIsDeleteOpen(false)}
