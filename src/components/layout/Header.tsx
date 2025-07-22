@@ -102,11 +102,15 @@ const DesktopActions = ({ user, handleLogout }: DesktopActionsProps) => {
 type MobileActionsProps = {
   setShowMobileSearch: (show: boolean) => void;
   setShowMobileMenu: (show: boolean) => void;
+  user?: User | null;
+  isLoggedIn?: boolean;
 };
 
 const MobileActions = ({
   setShowMobileSearch,
   setShowMobileMenu,
+  user,
+  isLoggedIn,
 }: MobileActionsProps) => (
   <div className='flex items-center gap-2 lg:hidden'>
     <IconButton
@@ -117,27 +121,33 @@ const MobileActions = ({
     >
       <FiSearch className='w-6 h-6' />
     </IconButton>
-    <IconButton
-      aria-label='Open menu'
-      onClick={() => setShowMobileMenu(true)}
-      size='md'
-      className='text-neutral-700'
-    >
-      {/* Hamburger icon */}
-      <svg
-        className='w-7 h-7'
-        fill='none'
-        stroke='currentColor'
-        viewBox='0 0 24 24'
+    {isLoggedIn && user ? (
+      <span onClick={() => setShowMobileMenu(true)} className='cursor-pointer'>
+        <AvatarIcon user={user} size={32} />
+      </span>
+    ) : (
+      <IconButton
+        aria-label='Open menu'
+        onClick={() => setShowMobileMenu(true)}
+        size='md'
+        className='text-neutral-700'
       >
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          strokeWidth={2}
-          d='M4 6h16M4 12h16M4 18h16'
-        />
-      </svg>
-    </IconButton>
+        {/* Hamburger icon */}
+        <svg
+          className='w-7 h-7'
+          fill='none'
+          stroke='currentColor'
+          viewBox='0 0 24 24'
+        >
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={2}
+            d='M4 6h16M4 12h16M4 18h16'
+          />
+        </svg>
+      </IconButton>
+    )}
   </div>
 );
 
@@ -167,7 +177,18 @@ const MobileMenu = ({
         <div className='flex flex-col h-full'>
           {/* Header */}
           <div className='flex items-center justify-between p-4 border-b border-neutral-200'>
-            <h2 className='text-lg font-semibold text-neutral-900'>Menu</h2>
+            <Link href='/' className='flex items-center gap-2'>
+              <Image
+                src='/yourlogo.svg'
+                alt='Logo'
+                width={32}
+                height={32}
+                style={{ width: 32, height: 32 }}
+              />
+              <span className='font-bold px-2 sm:px-4 text-lg md:text-2xl text-neutral-900'>
+                Blog
+              </span>
+            </Link>
             <IconButton
               aria-label='Close menu'
               onClick={() => setShowMobileMenu(false)}
@@ -198,24 +219,27 @@ const MobileMenu = ({
                     {user.name}
                   </span>
                 </div>
+
                 <Link
                   href='/post/write'
-                  className='flex items-center gap-2 px-4 py-2 hover:bg-neutral-100  text-neutral-700 text-base rounded cursor-pointer w-full text-left'
+                  className='flex items-center gap-2 px-4 py-3 hover:bg-neutral-100  text-neutral-700 text-base rounded cursor-pointer w-full text-left'
                   onClick={() => setShowMobileMenu(false)}
                 >
+                  <LuPencilLine size={20} className='inline-block' />
                   Write Post
                 </Link>
                 <Link
                   href={user ? `/profile/${user.id}` : '/profile'}
-                  className='flex items-center gap-2 px-4 py-2 hover:bg-neutral-100 text-neutral-700 text-base rounded cursor-pointer'
+                  className='flex items-center gap-2 px-4 py-3 hover:bg-neutral-100 text-neutral-700 text-base rounded cursor-pointer'
                   onClick={() => setShowMobileMenu(false)}
                 >
+                  <RiAccountCircleLine className='w-6 h-6 ' />
                   Profile
                 </Link>
                 <Button
                   type='button'
-                  className='flex items-center gap-2 px-4 py-2 text-neutral-700 text-base rounded cursor-pointer w-full text-left'
-                  variant='ghost'
+                  className='flex items-center gap-2 px-4 py-3 text-neutral-700 text-base rounded cursor-pointer w-full text-left'
+                  variant='primary'
                   onClick={() => {
                     handleLogout();
                     setShowMobileMenu(false);
@@ -346,7 +370,7 @@ const Header = () => {
                 style={{ width: 32, height: 32 }}
               />
               <span className='font-bold px-2 sm:px-4 text-lg md:text-2xl text-neutral-900'>
-                Your Logo
+                Blog
               </span>
             </Link>
 
@@ -362,6 +386,8 @@ const Header = () => {
             <MobileActions
               setShowMobileSearch={setShowMobileSearch}
               setShowMobileMenu={setShowMobileMenu}
+              user={user}
+              isLoggedIn={isLoggedIn}
             />
           </div>
         </div>

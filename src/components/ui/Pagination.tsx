@@ -34,14 +34,14 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <nav
-      className='flex justify-center items-center gap-4 mt-4 py-10 h-16 border-t border-gray-300'
+      className='flex justify-center items-center gap-2 sm:gap-4 mt-4 py-6 sm:py-10 h-auto sm:h-16 border-t border-gray-300 '
       role='navigation'
       aria-label='Pagination Navigation'
       aria-live='polite'
     >
       <Button
         type='button'
-        className='flex items-center gap-1 text-black disabled:text-black cursor-pointer '
+        className='flex items-center gap-1 text-black disabled:text-black cursor-pointer px-2 sm:px-4 min-w-0'
         onClick={() => onPageChange(current - 1)}
         disabled={current === 1}
         variant='ghost'
@@ -49,8 +49,8 @@ export const Pagination: React.FC<PaginationProps> = ({
         aria-disabled={current === 1}
       >
         <svg
-          width='24'
-          height='24'
+          width='20'
+          height='20'
           fill='none'
           stroke='currentColor'
           strokeWidth='2'
@@ -73,8 +73,8 @@ export const Pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(p)}
             className={
               p === current
-                ? 'w-12 h-12 rounded-full bg-primary-300  text-white font-semibold flex items-center justify-center cursor-pointer'
-                : 'w-12 h-12 rounded-full text-gray-800 hover:text-primary-300 font-bold flex items-center justify-center hover:bg-primary-100 cursor-pointer'
+                ? 'w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-primary-300 text-white font-semibold flex items-center justify-center cursor-pointer text-base sm:text-lg'
+                : 'w-8 h-8 sm:w-12 sm:h-12 rounded-full text-gray-800 hover:text-primary-300 font-bold flex items-center justify-center hover:bg-primary-100 cursor-pointer text-base sm:text-lg'
             }
             disabled={p === current}
             variant={p === current ? 'primary' : 'ghost'}
@@ -87,7 +87,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         ) : (
           <span
             key={idx}
-            className='w-8 h-8 flex items-center justify-center text-gray-400'
+            className='w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-gray-400'
             aria-hidden='true'
           >
             {p}
@@ -96,7 +96,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       )}
       <Button
         type='button'
-        className='flex items-center gap-1 text-black disabled:text-black cursor-pointer'
+        className='flex items-center gap-1 text-black disabled:text-black cursor-pointer px-2 sm:px-4 min-w-0'
         onClick={() => onPageChange(current + 1)}
         disabled={current === total}
         variant='ghost'
@@ -105,8 +105,8 @@ export const Pagination: React.FC<PaginationProps> = ({
       >
         Next
         <svg
-          width='24'
-          height='24'
+          width='20'
+          height='20'
           fill='none'
           stroke='currentColor'
           strokeWidth='2'

@@ -106,7 +106,7 @@ export default function HomeView({
       <div className='grid grid-cols-1 md:grid-cols-12 gap-8 relative'>
         <div className='md:col-span-8 flex flex-col items-center w-full min-w-0 md:min-h-[80vh] md:flex-col md:justify-between'>
           <h2
-            className='text-2xl font-bold mb-8 self-start'
+            className='text-xl md:text-2xl font-bold mb-8 self-start'
             tabIndex={0}
             aria-label='Recommended For You'
           >
@@ -135,7 +135,7 @@ export default function HomeView({
                   />
                   {index !== recommended.length - 1 && (
                     <div
-                      className='mt-4 mb-4 border-b border-gray-300 w-full'
+                      className='my-1 sm:my-4 border-b border-gray-300 w-full'
                       role='separator'
                       aria-label='Post divider'
                     />
@@ -144,7 +144,7 @@ export default function HomeView({
               ))
             )}
           </div>
-          <div className='w-full mt-8 md:mt-auto'>
+          <div className='w-full mt-8 md:mt-auto border-b border-gray-300 md:border-none'>
             <Pagination
               current={currentPage}
               total={totalPages}
@@ -155,7 +155,7 @@ export default function HomeView({
         <div className='md:col-span-4 relative z-10 w-full min-w-0 md:border-l md:border-[#D5D7DA] md:pl-8'>
           <div className='bg-transparent md:sticky md:top-8'>
             <h2
-              className='text-2xl font-bold mb-8'
+              className='text-xl md:text-2xl font-bold mb-8'
               tabIndex={0}
               aria-label='Most Liked Posts'
             >
@@ -169,12 +169,12 @@ export default function HomeView({
                   No posts found.
                 </div>
               ) : (
-                mostLiked.map((post) => (
+                mostLiked.map((post, index) => (
                   <motion.div
                     key={post.id}
                     initial={{ opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
+                    transition={{ duration: 0.5, delay: index * 0.2 }}
                   >
                     <PostCard
                       post={post}
@@ -182,6 +182,13 @@ export default function HomeView({
                       isSmall={true}
                       aria-label={`Most liked post: ${post.title}`}
                     />
+                    {index !== 2 && (
+                      <div
+                        className='my-1 sm:my-2 border-b border-gray-300 w-full'
+                        role='separator'
+                        aria-label='Post divider'
+                      />
+                    )}
                   </motion.div>
                 ))
               )}
