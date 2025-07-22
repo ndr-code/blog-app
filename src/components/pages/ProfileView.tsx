@@ -84,8 +84,8 @@ const ProfileView = ({ userId }: ProfileViewProps) => {
         aria-label='Profile main content'
       >
         {/* Profile Info */}
-        <div className='mx-auto max-w-5xl px-8 rounded border-b border-neutral-300'>
-          <div className='flex items-center gap-4'>
+        <div className='mx-auto max-w-5xl px-8 border-b border-neutral-300'>
+          <div className='flex items-center gap-4 py-4'>
             <AvatarDialog
               user={user}
               aria-label={`User avatar: ${user.name}`}
@@ -173,7 +173,7 @@ const ProfileView = ({ userId }: ProfileViewProps) => {
     >
       {/* Profile Info + Edit Profile */}
       <div className='mx-auto bg-white max-w-5xl px-8 rounded-xl border border-neutral-300'>
-        <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-4 py-4'>
           <AvatarDialog user={user} aria-label={`User avatar: ${user.name}`} />
           <div>
             <h1

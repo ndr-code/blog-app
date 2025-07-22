@@ -13,7 +13,7 @@ export const AvatarRoot = React.forwardRef<
 >(({ className = '', ...props }, ref) => (
   <Avatar.Root
     ref={ref}
-    className={`w-8 h-8 rounded-full border border-neutral-200 overflow-hidden bg-neutral-100 ${className}`}
+    className={`w-8 h-8 rounded-full overflow-hidden bg-white ${className}`}
     {...props}
   />
 ));
@@ -72,7 +72,7 @@ export const AvatarIcon: React.FC<AvatarProps> = ({
   const label = user?.name || user?.email || 'User';
   return (
     <AvatarRoot
-      className={`border border-neutral-200 bg-neutral-100 ${className}`}
+      className={`bg-neutral-100 ${className}`}
       style={{ width: size, height: size }}
       aria-label={label}
       role='img'
